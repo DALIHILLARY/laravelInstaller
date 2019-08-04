@@ -20,7 +20,7 @@ def Xampp():
     if not dir.exists():
         choice = str(input("Do you have xampp file on computer (YES,NO):"))
         if choice in ['yes','YES','y','Y']:
-            print("Please move the file to the newly created folder xampp in %s and press Enter\n" %os.getcwd())
+            print("Please move the file to  %s \n" %os.getcwd())
             
             input("PRESS ANY KEY WHEN COPY IS DONE:")
             os.system("mv *.run xampp.run")
