@@ -112,7 +112,7 @@ def env():
     print("done")
 
         
-#let us fire up this shit......
+#let us fire up this project......
 
 if __name__ == '__main__':
         banner()
