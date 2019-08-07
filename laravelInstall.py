@@ -53,7 +53,7 @@ def composer():
     compUbuntu = Path(w)
     if compUbuntu.exists():
             print("\n removing composer folder \n")
-            shutil.rmtree(w)
+            os.system("echo %s | sudo -S rm -rf %s" %(pwd,w))
 
     compInstall = Path(x)
     if compInstall.exists():
