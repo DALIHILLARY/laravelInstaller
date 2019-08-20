@@ -1,16 +1,34 @@
 #!/usr/bin/env python3
 
-#this project was inspired by the hardish in BSSE students in installing laravel on linux/mac
+#this project was inspired by the hardish in BSSE students in my University installing laravel on linux/mac
 #please do not run script as root for better functionality
 
 #let us import the modules required for the script
 import requests
+import progressbar
+import re
+from bs4 import BeautifulSoup
 from pathlib import Path
 from urllib.request import urlretrieve
 import os
 import shutil
 
 #split the logic into functions
+
+class MyProgressBar():
+    def __init__(self):
+        self.pbar = None
+
+    def __call__(self, block_num, block_size, total_size):
+        if not self.pbar:
+            self.pbar=progressbar.ProgressBar(maxval=total_size)
+            self.pbar.start()
+
+        downloaded = block_num * block_size
+        if downloaded < total_size:
+            self.pbar.update(downloaded)
+        else:
+            self.pbar.finish()
 
 
 def Xampp():
@@ -27,20 +45,25 @@ def Xampp():
        
         
         else:
-                url = 'https://www.apachefriends.org/xampp-files/7.3.7/xampp-linux-x64-7.3.7-1-installer.run'
+                url = 'https://www.apachefriends.org'
                 dst = 'xampp.run'
-                urlretrieve(url, dst)
+                r = requests.get(url)
+                soup = BeautifulSoup(r.text,'html.parser')
+                for x in soup.findall('a'):
+                        link = x.get('href') #extract href links from results
+                        if re.search("xampp-linux",link): #search for linux in links
+                                url = link #assign url to the link gotten
+
+                print("\033[31m.............DOWNLOADING XAMPP PLEASE WAIT...............")
+                urlretrieve(url,dst,MyProgressBar())
+        #instructions to execute after decision making 
+        os.system("echo %s | sudo -S chmod +x xampp.run" %pwd)
+        os.system("echo %s | sudo -S ./xampp.run" %pwd)
+        os.system("echo %s | sudo -S ln -s /opt/lampp/bin/php /usr/local/bin/php" %pwd)
+        os.system("echo %s | sudo -S /opt/lampp/xampp start" %pwd)
 
     else:
         print("\n xampp install already existing. installing other requirements ..... \n \n")
-
-
-    #instructions to execute after decision making 
-    os.system("echo %s | sudo -S chmod +x xampp.run" %pwd)
-    os.system("echo %s | sudo -S ./xampp.run" %pwd)
-    os.system("echo %s | sudo -S ln -s /opt/lampp/bin/php /usr/local/bin/php" %pwd)
-    os.system("echo %s | sudo -S /opt/lampp/xampp start" %pwd)
-
 
 def composer():
     #this will check if composer exists and unistall it then re-install it
@@ -62,14 +85,16 @@ def composer():
     dir = "/home/"+ user
     os.chdir(dir)
     print(" \n installing composer")
-    cinst = '''php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-                php -r "if (hash_file('sha384', 'composer-setup.php') === '48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-                php composer-setup.php
-                php -r "unlink('composer-setup.php');
-             "'''
+
+    #parsing the download page
+    url = "https://getcomposer.org/download/"
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text,'html.parser')
+    cinst = soup.pre.string #composer download code in <pre> tags
     os.system(cinst)
     os.system("echo %s | sudo -S mv composer.phar /usr/local/bin/composer" %pwd)
     print("\033[31m ...........CREATING LARAVEL PROJECT.... PLEASE WAIT \033[31m") 
+    os.system("echo %s | sudo -S apt-get install git" %pwd)
     os.system("composer create-project --prefer-dist laravel/laravel %s" %name)
     os.chdir("%s" %name)
     os.system("php artisan serve")
@@ -85,8 +110,7 @@ def banner():
                 ***    ****    *****       *****     *****
                 ***    ****    *****     *****        *****
         **************************************************************** 
-                A LARAVEL INSTALLER BY KALI HIX 
-                        dalirichardh@gmail.com
+                       A LARAVEL INSTALLER BY KALI HIX 
                         PROGRAMMERS OVER MORTAL-MEN
          \033[32m'''
     print(logo)
@@ -118,7 +142,7 @@ if __name__ == '__main__':
         banner()
         if os.geteuid() != 0:
                 
-                name = str(input("\033[32m PLEASE ENTER THE NAME OF THE PROJECT: \n \033[32m"))
+                name = str(input("\033[32m PLEASE ENTER THE NAME OF THE PROJECT: \033[32m"))
                 pwd  = str(input("\n PLEASE ENTER PC PASSWORD:"))
 
                 Xampp()
@@ -127,9 +151,6 @@ if __name__ == '__main__':
 
         else:
                 print(" \033[31m PLEASE DON'T RUN SCRIPT AS ROOT \033[31m")
-
-
-os.remove()
 
 
     

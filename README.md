@@ -24,6 +24,8 @@ NOTE:
 
 INSTRUCTIONS
 
+pip3 install -r requirements.txt
+
 python3 laravelInstaller.py
 
 input the name of your project
