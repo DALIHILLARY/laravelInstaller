@@ -93,8 +93,13 @@ def composer():
     cinst = soup.pre.string #composer download code in <pre> tags
     os.system(cinst)
     os.system("echo %s | sudo -S mv composer.phar /usr/local/bin/composer" %pwd)
-    print("\033[31m ...........CREATING LARAVEL PROJECT.... PLEASE WAIT \033[31m") 
-    os.system("echo %s | sudo -S apt-get install git" %pwd)
+    print("\033[31m ...........CREATING LARAVEL PROJECT.... PLEASE WAIT \033[31m")
+
+    #check if user has git installed
+    git = Path("/bin/git")
+    if not git.exists():
+        os.system("echo %s | sudo -S apt-get install git" %pwd)
+        
     os.system("composer create-project --prefer-dist laravel/laravel %s" %name)
     os.chdir("%s" %name)
     os.system("php artisan serve")
