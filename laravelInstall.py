@@ -93,7 +93,7 @@ def composer():
     cinst = soup.pre.string #composer download code in <pre> tags
     os.system(cinst)
     os.system("echo %s | sudo -S mv composer.phar /usr/local/bin/composer" %pwd)
-    print("\033[31m ...........CREATING LARAVEL PROJECT.... PLEASE WAIT \033[31m")
+    print("\033[31m \n ...........CREATING LARAVEL PROJECT.... PLEASE WAIT \033[31m")
 
     #check if user has git installed
     git = Path("/bin/git")
